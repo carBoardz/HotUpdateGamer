@@ -1,15 +1,8 @@
 
-local ConfigBundleName = "configassets";
-local PlayerBundleName = "player";
-
 require("InitClass")
 require("PlayerDate")
 
-abMgr:LoadABOnlyAsync(ConfigBundleName, function(ok)
-    loadConfigDone = ok
+EventCenter:RegisterLua("LuaEnv_Ready", function()
+    print("Lua 收到事件，开始后续逻辑")
+    -- ...
 end)
-
-abMgr:LoadABOnlyAsync(PlayerBundleName, function(ok)
-    loadPlayerDone = ok
-end)
-

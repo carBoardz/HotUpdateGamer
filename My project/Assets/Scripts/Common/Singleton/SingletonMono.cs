@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,7 +22,7 @@ namespace MySinleton
                 {
                     lock (_lock)
                     {
-                        if (isApplicationQuitting)
+                        if (isApplicationQuitting || isDestroyed)
                         {
                             return null;
                         }

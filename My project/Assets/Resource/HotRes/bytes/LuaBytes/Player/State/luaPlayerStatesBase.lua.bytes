@@ -1,6 +1,6 @@
 require("Object")
 
-Object:subClass("LuaPlayerStateBase")
+Object:subClass("luaPlayerStatesBase")
 
 function LuaPlayerStateBase:Enter() end
 function LuaPlayerStateBase:Exit() end

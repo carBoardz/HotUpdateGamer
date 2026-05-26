@@ -16,6 +16,7 @@ public class LuaMgr : SingletonMono<LuaMgr>
     protected override void Awake()
     {
         base.Awake();
+        if (!IsValidSingleton) return;
         _streamingPath = Path.Combine(Application.streamingAssetsPath, "ABRes");
         _persistentPath = Path.Combine(Application.persistentDataPath, "ABRes");
     }
@@ -52,11 +53,24 @@ public class LuaMgr : SingletonMono<LuaMgr>
     {
         luaEnv.DoString($"require('{str}')");
     }
+    /// <summary>
+    /// // 执行require并返回Lua脚本return的表（Controller/Model）
+    /// </summary>
+    /// <param name="luaPath">lua文件名</param>
+    /// <returns></returns>
     public LuaTable RequireModule(string luaPath)
     {
-        // 执行require并返回Lua脚本return的表（Controller/Model）
-        return luaEnv.DoString($"return require('{luaPath}')")[0] as LuaTable;
+        try
+        {
+            return luaEnv.DoString($"return require('{luaPath}')")[0] as LuaTable;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"RequireModule({luaPath}) 失败: {e.Message}");
+            return null;
+        }
     }
+    
     public void Dispose()
     {
         if (luaEnv != null)
@@ -85,15 +99,15 @@ public class LuaMgr : SingletonMono<LuaMgr>
     {
         if (ABManager.Instance != null)
         {
-            var ta = ABManager.Instance.LoadAssetSync<TextAsset>("luaassets", path + ".lua");
+            var ta = ABManager.Instance.LoadAssetSync<TextAsset>("luaassets", path + ".lua.bytes");
             if (ta != null)
             {
-                Debug.Log($"缓存中成功加载AB包: [{path}]，长度: {ta.bytes.Length}");
+                //Debug.Log($"缓存中成功加载AB包: [{path}]，长度: {ta.bytes.Length}");
                 return ta.bytes;
             }
             else
             {
-                Debug.LogError($"AB包[{path}]加载失败");
+                Debug.LogWarning($"AB包[{path}]加载失败");
             }
         }
 
@@ -112,7 +126,7 @@ public class LuaMgr : SingletonMono<LuaMgr>
             }
             else
             {
-                Debug.LogError($"本地资源未有{fileName}脚本");
+                Debug.LogWarning($"本地资源未有{fileName}脚本");
             }
         }
         return null;

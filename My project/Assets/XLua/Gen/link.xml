@@ -4,6 +4,8 @@
 
 	<assembly fullname="Assembly-CSharp">
 	    <type fullname="PlayerAnimationController" preserve="all"/>
+		<type fullname="EventCenter" preserve="all"/>
+		<type fullname="LoadSceneMgr" preserve="all"/>
 		<type fullname="PlayerController" preserve="all"/>
 		<type fullname="Tutorial.BaseClass" preserve="all"/>
 		<type fullname="Tutorial.TestEnum" preserve="all"/>

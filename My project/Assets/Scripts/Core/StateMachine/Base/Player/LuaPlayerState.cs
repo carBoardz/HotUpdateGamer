@@ -32,7 +32,11 @@ public class LuaPlayerState : IState
 
     protected void Awake()
     {
-        EventCenter.Instance.Register("LuaEnv_Ready", new Action(OnLuaReady));
+        EventCenter.Instance.Register(
+        "LuaEnv_Ready",
+        new Action(OnLuaReady),
+        once: false
+        );
     }
     private void OnLuaReady()
     {
@@ -100,6 +104,12 @@ public class LuaPlayerState : IState
     public void OnUpdate()
     {
         _onUpdate?.Invoke();
+    }
+
+    public void OnFixedUpdate()
+    {
+        _onFixedUpdate?.Invoke();
+
         if (controller.HasMoveInput && !isBuffering)
         {
             StartBufferTime();
@@ -109,7 +119,8 @@ public class LuaPlayerState : IState
             isBuffering = false;
         }
     }
-
-    public void OnFixedUpdate() => _onFixedUpdate?.Invoke();
-    public void OnLateUpdate() => _onLateUpdate?.Invoke();
+    public void OnLateUpdate()
+    {
+        _onLateUpdate?.Invoke();
+    }
 }

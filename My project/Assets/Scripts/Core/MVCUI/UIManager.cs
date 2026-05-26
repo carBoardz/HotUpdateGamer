@@ -1,4 +1,5 @@
 using MySinleton;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -24,6 +25,15 @@ public class UIManager : SingletonMono<UIManager>
     protected override void Awake()
     {
         base.Awake();
+        if (!IsValidSingleton) return;
+
+        EventCenter.Instance.Register(
+        "LuaEnv_Ready",
+        new Action(RegisteToLua),
+        owner: this,
+        once: false
+        );
+        
         _openedUI = new Dictionary<string, BaseView>();
         _uiPool = new Dictionary<string, Queue<BaseView>>();
         LoadUIFramework();//ui因为要一开始就需要加载所以比较特殊
@@ -37,6 +47,7 @@ public class UIManager : SingletonMono<UIManager>
         {
             if (frameworkPrefab != null)
             {
+                Debug.Log("[UIManager] 创建ui_framework成功");
                 GameObject frameworkObj = GameObject.Instantiate((GameObject)frameworkPrefab);
                 DontDestroyOnLoad(frameworkObj);
 
@@ -51,43 +62,74 @@ public class UIManager : SingletonMono<UIManager>
     /// <summary>
     /// 异步打开并返回UI界面
     /// </summary>
-    /// <param name="uiName">UI名字</param>
+    /// <param name="configName">UI的Config名字</param>
     /// <param name="layer">UI的层级</param>
     /// <param name="userData">用户的信息</param>
     /// <returns></returns>
-    public async Task<BaseView> OpenUIAsync(string uiName, UILayer layer = UILayer.Normal, object userData = null)
+    [LuaCallCSharp]
+    public async Task<BaseView> OpenUIAsync(string configName, UILayer layer = UILayer.Normal, object userData = null)
     {
-        var config = UIConfigManager.Instance.GetUIConfig(uiName);
-        if (config == null)
+        try
         {
-            Debug.LogError("UI配置不存在：" + uiName);
+            var config = UIConfigManager.Instance.GetUIConfig(configName);
+            if (config == null)
+            {
+                Debug.LogError("[UIManager] UI配置不存在：" + configName);
+                return null;
+            }
+
+            BaseView view = await LoadViewAsync(config);
+            if (view == null) Debug.LogError("[UIManager] 获取View对象失败");
+
+            //加载对应的BindingConfigSO
+            await view.PrepareWidgetsAsync(config);
+
+            // 挂载到对应层级
+            Mount(configName, view, layer);
+
+            //从lua中获取返回的表
+            var luaController = LuaMgr.Instance.RequireModule(config.controller);
+
+            if (luaController == null)
+            {
+                Debug.LogError($"[UIManager] 获取的 {config.controller} 的luaController为null");
+                return null;
+            }
+
+            if (luaController.Get<LuaFunction>("New") != null)
+            {
+                var ctrlInst = luaController.Get<LuaFunction>("New").Call(luaController)[0] as LuaTable;
+                view.BindLuaController(ctrlInst, userData);
+            }
+            else
+            {
+                view.BindLuaController(luaController, userData);
+            }
+            return view;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[UIManager] OpenUIAsync({configName}) 失败: {ex}");
             return null;
         }
-
-        BaseView view = await LoadViewAsync(config);
-        if (view == null) Debug.LogError("获取View对象失败");
-
-        //加载对应的BindingConfigSO
-        await view.PrepareWidgetsAsync(config);
-
-        // 挂载到对应层级
-        Mount(uiName, view, layer);
-
-        //从lua中获取返回的表
-        var luaController = LuaMgr.Instance.RequireModule(config.controller);
-
-        if (luaController.Get<LuaFunction>("New") != null)
-        {
-            var ctrlInst = luaController.Get<LuaFunction>("New").Call(view, userData)[0] as LuaTable;
-            view.BindLuaController(ctrlInst,userData);
-        }
-        else
-        {
-            view.BindLuaController(luaController,userData);
-        }
-
-        return view;
+        
     }
+    /// <summary>
+    /// 关闭UI
+    /// </summary>
+    /// <param name="uiName">ui名</param>
+    [LuaCallCSharp]
+    public void CloseUI(string uiName)
+    {
+        if (_openedUI.TryGetValue(uiName, out var view))
+        {
+            view.gameObject.SetActive(false);
+            view.DisposeView();
+            _openedUI.Remove(uiName);
+            ReturnToPool(uiName, view);
+        }
+    }
+    #region 内部方法相关
     /// <summary>
     /// 从对象池获取View对象，没有则从AB包中加载
     /// </summary>
@@ -115,21 +157,8 @@ public class UIManager : SingletonMono<UIManager>
                 tcs.SetResult(null);
             }
         });
-        
+
         return await tcs.Task;
-    }
-    /// <summary>
-    /// 关闭UI
-    /// </summary>
-    public void CloseUI(string uiName)
-    {
-        if (_openedUI.TryGetValue(uiName, out var view))
-        {
-            view.gameObject.SetActive(false);
-            view.DisposeView();
-            _openedUI.Remove(uiName);
-            ReturnToPool(uiName, view);
-        }
     }
     /// <summary>
     /// 挂载到对应层级
@@ -174,7 +203,16 @@ public class UIManager : SingletonMono<UIManager>
         }
         _uiPool[uiName].Enqueue(view);
     }
-    public void ClearAll()
+    #endregion
+    #region 事件注册相关
+    void RegisteToLua()
+    {
+        LuaMgr.Instance.Global.Set("UIManager", UIManager.Instance);
+    }
+    #endregion
+    #region 清理缓存相关
+    [LuaCallCSharp]
+    public async Task ClearAll()
     {
         foreach (var uiName in _openedUI.Keys)
         {
@@ -185,6 +223,12 @@ public class UIManager : SingletonMono<UIManager>
         }
         _openedUI.Clear();
     }
+    protected override void OnApplicationQuit()
+    {
+        base.OnApplicationQuit();
+        ClearAll();
+    }
+    #endregion
 }
 public enum UILayer
 {

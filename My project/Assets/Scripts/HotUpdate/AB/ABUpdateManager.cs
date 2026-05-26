@@ -45,6 +45,7 @@ namespace Tool.MyAB
         protected override void Awake()
         {
             base.Awake();
+            if (!IsValidSingleton) return;
             _persistentABPath = Path.Combine(Application.persistentDataPath, "ABRes");
             _streamingABPath = Path.Combine(Application.streamingAssetsPath, "ABRes");
             // 初始化热更目录
@@ -169,6 +170,7 @@ namespace Tool.MyAB
             if (downLoadList.Count == 0)
             {
                 Debug.Log("[DownLoadABFile] 所有AB包已是最新，无需下载");
+                progressCallback?.Invoke(downloadedBytes, totalBytes, 1);
                 return false;
             }
             //下载待下载列表中的资源

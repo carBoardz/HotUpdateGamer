@@ -1,7 +1,10 @@
 using MySinleton;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Tool.MyAB;
 using UnityEngine;
+using XLua;
 
 /// <summary>
 /// 【单一职责】仅管理UI配置数据，不加载AB，不操作UI
@@ -16,8 +19,9 @@ public class UIConfigManager : Singleton<UIConfigManager>
     /// <summary>
     /// 【GameEntry 调用】初始化：加载ConfigAB里的SO总配置
     /// </summary>
-    public void InitConfig()
+    public async Task InitConfig()
     {
+        var tcs = new TaskCompletionSource<bool>();
         ABManager.Instance.LoadResAsync(abName, ResName, typeof(UISOConfigs), (so) =>
         {
             // 解析SO，存入字典缓存
@@ -28,8 +32,9 @@ public class UIConfigManager : Singleton<UIConfigManager>
                 _configCache[item.uiName] = item;
             }
             IsConfigLoaded = true;
-            Debug.Log("UI配置SO加载完成！");
+            tcs.SetResult(true);
         });
+        await tcs.Task;
     }
 
     /// <summary>
@@ -38,15 +43,27 @@ public class UIConfigManager : Singleton<UIConfigManager>
     public UIConfigItem GetUIConfig(string uiName)
     {
         _configCache.TryGetValue(uiName, out var config);
-        return config;
+        if (config != null)
+        {
+            Debug.Log($"[UIConfigManager] 成功加载{uiName}的config资源");
+            return config;
+        }
+        else
+        {
+            Debug.LogError($"[UIConfigManager] {uiName}的config资源加载出错");
+            return null;
+        }
     }
 
+    #region 清理缓存相关
     /// <summary>
     /// 清理（切换账号/退出游戏才调用）
     /// </summary>
-    public void ClearCache()
+    [LuaCallCSharp]
+    public async Task ClearCache()
     {
         _configCache.Clear();
         IsConfigLoaded = false;
     }
+    #endregion
 }

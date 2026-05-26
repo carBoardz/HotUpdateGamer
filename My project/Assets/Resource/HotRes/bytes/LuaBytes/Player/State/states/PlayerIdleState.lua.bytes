@@ -22,7 +22,12 @@ function PlayerIdleState:OnUpdate( )
 	local csharp = self.csharp
     -- 对应 C# 的 base.OnBufferComplete();
 	csharp:OnBufferComplete()
+end
 
+function PlayerIdleState:OnFixedUpdate( )
+	self.base.OnFixedUpdate(self)
+	
+	local csharp = self.csharp
 	-- 对应 C# 的 if (controller.HasMoveInput)
 	if csharp.controller.HasMoveInput then
 	    -- 有蹲伏输入
@@ -36,10 +41,7 @@ function PlayerIdleState:OnUpdate( )
 	        csharp.stateMachine:SwitchState("PlayerWalkState")
 	    end
 	end
-end
 
-function PlayerIdleState:OnFixedUpdate( )
-	self.base.OnFixedUpdate(self)
 end
 
 function PlayerIdleState:OnLateUpdate( )

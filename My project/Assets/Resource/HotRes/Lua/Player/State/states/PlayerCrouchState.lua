@@ -1,5 +1,5 @@
 require("PlayerCrouchState")
-LuaPlayerStateBase:subClass("PlayerCrouchState")
+luaPlayerStatesBase:subClass("PlayerCrouchState")
 
 function PlayerCrouchState:new()
 	local obj = self.base.new(self)
@@ -9,7 +9,7 @@ end
 
 function PlayerCrouchState:Enter( )
 	self.base.Enter(self)
-	local csharp = self.self
+	local csharp = self.csharp
 	csharp:OnBufferComplete()
 end
 
@@ -19,10 +19,15 @@ end
 
 function PlayerCrouchState:OnUpdate( )
 	self.base.OnUpdate(self)
-	local csharp = self.self
+	local csharp = self.csharp
     -- 对应 C# 的 base.OnBufferComplete();
 	csharp:OnBufferComplete()
+end
 
+function PlayerCrouchState:OnFixedUpdate( )
+	self.base.OnFixedUpdate(self)
+	local csharp = self.csharp
+	
 	-- 对应 C# 的 if (controller.HasMoveInput)
 	if csharp.controller.HasMoveInput then
 	    -- 有蹲伏输入
@@ -36,10 +41,6 @@ function PlayerCrouchState:OnUpdate( )
 	        csharp.stateMachine:SwitchState("PlayerWalkState")
 	    end
 	end
-end
-
-function PlayerCrouchState:OnFixedUpdate( )
-	self.base.OnFixedUpdate(self)
 end
 
 function PlayerCrouchState:OnLateUpdate( )

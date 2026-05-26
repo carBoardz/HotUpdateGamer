@@ -28,23 +28,49 @@ public class PlayerController : CharacterControllerBase
         playerHotLogic = new PlayerHotLogic();
         playerHotLogic.Init(this);
         Init();
-
-        EventCenter.Instance.Register("LuaEnv_Ready", new Action(OnLuaReady), owner: this);
+        #region 事件注册
+        EventCenter.Instance.Register(
+        "LuaEnv_Ready",
+        new Action(OnLuaReady),
+        owner: this,
+        once: false
+        );
+        EventCenter.Instance.Register(
+        "LuaEnv_Ready",
+        new Action(OnLuaReady),
+        owner: this,
+        once: false
+        );
+        #endregion
     }
+    //处理逻辑
     protected override void OnUpdate()
     {
         base.OnUpdate();
-        UpdateInputCache();
+
         //驱动状态机
         playerMovementStateMachine.OnUpdate();//状态机一变，通过StateMechineBase中的currentState?.OnUpdate();执行切换的state的变更逻辑
-        playerMovementStateMachine.UpdateTimer(Time.deltaTime);
+        
         playerHotLogic.Update(Time.deltaTime);
 
         //显示玩家状态
         currentState = playerMovementStateMachine.currentState;
         _currentStateName = currentState?.GetType().Name ?? "Null";
     }
+    //处理物理逻辑
+    protected override void OnFixedUpdate()
+    {
+        base.OnFixedUpdate();
 
+        UpdateInputCache();
+
+        //驱动状态机
+        playerMovementStateMachine.OnFixedUpdate();
+
+        playerMovementStateMachine.UpdateTimer(Time.fixedDeltaTime);
+
+        playerAnimationController.OnAnimationUpdate();
+    }
     private void OnLuaReady()
     {
         if (LuaMgr.Instance.Global == null) Debug.LogError("LuaMgr未被实例化");

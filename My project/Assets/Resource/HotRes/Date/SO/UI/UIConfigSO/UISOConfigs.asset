@@ -15,16 +15,16 @@ MonoBehaviour:
   allUIConfigs:
   - uiName: MainPanel
     abName: configassets
-    controller: UI.MainPanelController
+    controller: MainPanelController
     bindingConfig: MainPanelBinding
     uiLayer: 0
   - uiName: UILoading
     abName: configassets
-    controller: UI.UILoadingController
+    controller: UILoadingController
     bindingConfig: UILoadingBinding
     uiLayer: 0
   - uiName: Prompt
     abName: configassets
-    controller: UI.PromptController
+    controller: PromptController
     bindingConfig: PromptBinding
     uiLayer: 2

@@ -25,6 +25,12 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(PlayerAnimationController), PlayerAnimationControllerWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(EventCenter), EventCenterWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(LoadSceneMgr), LoadSceneMgrWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(PlayerController), PlayerControllerWrap.__Register);
         
         
@@ -168,6 +174,10 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(Tool.MyAB.ABManager), ToolMyABABManagerWrap.__Register);
         
+        }
+        
+        static void wrapInit1(LuaEnv luaenv, ObjectTranslator translator)
+        {
         
             translator.DelayWrapLoader(typeof(Tutorial.DerivedClass.TestEnumInner), TutorialDerivedClassTestEnumInnerWrap.__Register);
         
@@ -179,6 +189,8 @@ namespace XLua.CSObjectWrap
         {
             
             wrapInit0(luaenv, translator);
+            
+            wrapInit1(luaenv, translator);
             
             
             translator.AddInterfaceBridgeCreator(typeof(System.Collections.IEnumerator), SystemCollectionsIEnumeratorBridge.__Create);

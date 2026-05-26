@@ -1,6 +1,7 @@
 require("Object")
 require("SplitTools")
 Json = require("JsonUtility")
+util = require "xlua.util"
 
 GameObject = CS.UnityEngine.GameObject
 Resources = CS.UnityEngine.Resources
@@ -21,10 +22,11 @@ ScrollRect = UI.ScrollRect
 UIBehaviour = CS.UnityEngine.EventSystems.UIBehaviour
 --Canvas = GameObject.Find("Canvas").transform
 
-abMgr = CS.Tool.MyAB.ABManager.Instance
 function GetPlayerController()
     return PlayerCtrl
 end
 
 -- 全局唯一配置表
 Config = Config or {}
+
+--ABManager、EventCenter、LuaMgr

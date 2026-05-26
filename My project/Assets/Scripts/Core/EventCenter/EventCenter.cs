@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SocialPlatforms;
@@ -11,6 +12,7 @@ using XLua;
 using static Unity.Collections.AllocatorManager;
 using static UnityEngine.Application;
 
+[LuaCallCSharp]
 public class EventCenter : SingletonMono<EventCenter>
 {
     /// <summary>
@@ -81,14 +83,15 @@ public class EventCenter : SingletonMono<EventCenter>
     protected override void Awake()
     {
         base.Awake();
+        if (!IsValidSingleton) return;
         Application.quitting += OnApplicationQuit;
 
-        EventCenter.Instance.Register(
-        "Csharp_Managers_Ready",
-        new Action(OnCsharpManagersReady),
-        owner: this,
-        once: true // 只执行一次
-        );
+        //EventCenter.Instance.Register(
+        //"",
+        //new Action(),
+        //owner: this,
+        //once: true
+        //);
     }
     void Update()
     {
@@ -335,11 +338,7 @@ public class EventCenter : SingletonMono<EventCenter>
         wrapper.Once = false;
         objectPool.Release(wrapper);
     }
-    void OnCsharpManagersReady()
-    {
-
-    }
-    public void Clear()
+    public async Task Clear()
     {
         _eventDict.Clear();
         objectPool.Clear();

@@ -10,6 +10,9 @@ using UnityEngine;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// 生成UI绑定配置信息同时生成Lua获取相关组件脚本
+/// </summary>
 public class UIBindingEditor : EditorWindow
 {
     static string directoryPath = "Assets/Resource/HotRes/Date/SO/UI/UIBindingSO/";
@@ -18,8 +21,8 @@ public class UIBindingEditor : EditorWindow
 
     static string LuaBindGeneratePath = "Assets/Resource/HotRes/Lua/UI/Binding";
 
-    [MenuItem("Assets/UI/生成绑定配置", false, 100)]
-    [Tooltip("配置文件生成在目录Assets/Resource/HotRes/Date/SO/UI/UIBindingSO/")]
+    [MenuItem("Assets/UISO/生成绑定配置", false, 100)]
+    [Tooltip("生成每个UIPrefab里的具体的组件绑定信息，配置文件生成在目录Assets/Resource/HotRes/Date/SO/UI/UIBindingSO/")]
     static void GenerateBindingConfig()
     {
         //确保UIPrefab的路径存在
@@ -40,14 +43,13 @@ public class UIBindingEditor : EditorWindow
         
         foreach (var prefab in Prefabs)
         {
-            string fullAssetPath = directoryPath + $"/{prefab.name}.asset";
+            string fullAssetPath = directoryPath + $"/{prefab.name}Binding.asset";
             //获取LuaBindingCollector
             LuaBindingCollector collector = AssetDatabase.LoadAssetAtPath<LuaBindingCollector>(fullAssetPath);
             if (collector == null)
             {
                 //创建so
                 collector = ScriptableObject.CreateInstance<LuaBindingCollector>();
-                collector.name = collector.name + "Binding";
                 collector.uiName = prefab.name;
                 collector.bindings = new List<WidgetBinding>();
             }
@@ -112,23 +114,25 @@ public class UIBindingEditor : EditorWindow
     /// <param name="parentPath">父级文件路径</param>
     /// <param name="folderName">目标文件名</param>
     /// <returns></returns>
-    public static void CreateFolderIfNotExist(string parentPath, string folderName)
+    public static void CreateFolderIfNotExist(string fullPath)
     {
-        string path = parentPath + "/" + folderName;
-        if (!AssetDatabase.IsValidFolder(path))
+        if (AssetDatabase.IsValidFolder(fullPath))
+            return;
+
+        string parent = Path.GetDirectoryName(fullPath);
+        string folder = Path.GetFileName(fullPath);
+
+        if (!AssetDatabase.IsValidFolder(parent))
         {
-            AssetDatabase.CreateFolder(parentPath, folderName);
+            CreateFolderIfNotExist(parent);
         }
+
+        AssetDatabase.CreateFolder(parent, folder);
+        AssetDatabase.Refresh();
     }
     static void CheckAndCreateFolder()
     {
-        // 一级一级来
-        CreateFolderIfNotExist("Assets", "Resource");
-        CreateFolderIfNotExist("Assets/Resource", "HotRes");
-        CreateFolderIfNotExist("Assets/Resource/HotRes", "Date");
-        CreateFolderIfNotExist("Assets/Resource/HotRes/Date", "SO");
-        CreateFolderIfNotExist("Assets/Resource/HotRes/Date/SO", "UI");
-        CreateFolderIfNotExist("Assets/Resource/HotRes/Date/SO/UI", "UIBindingSO");
+        CreateFolderIfNotExist(directoryPath);
     }
     /// <summary>
     /// 获取相对于根的路径
@@ -172,13 +176,13 @@ public class UIBindingEditor : EditorWindow
             foreach (var widget in Collector.bindings)
             {
                 string varName = char.ToLower(widget.widgetName[0]) + widget.widgetName.Substring(1);
-                sb.AppendLine($"self.{varName} = view:GetWidget(\"{widget.componentType}\")");
+                sb.AppendLine($"self.{varName} = view:GetWidget(\"{widget.widgetName}\")");
             }
             sb.AppendLine("end");
             sb.AppendLine();
             sb.AppendLine($"return M");
 
-            File.WriteAllText(luaFilePath, sb.ToString(), System.Text.Encoding.UTF8);
+            File.WriteAllText(luaFilePath, sb.ToString(),new System.Text.UTF8Encoding(false));
         }
 
         AssetDatabase.Refresh();

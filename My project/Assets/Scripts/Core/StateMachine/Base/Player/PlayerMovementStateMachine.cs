@@ -35,4 +35,8 @@ public class PlayerMovementStateMachine : MovementStateMachineBase
         currentState?.OnUpdate();
         playerController.playerAnimationController.OnAnimationUpdate();
     }
+    public override void OnFixedUpdate()
+    {
+        currentState?.OnFixedUpdate();
+    }
 }

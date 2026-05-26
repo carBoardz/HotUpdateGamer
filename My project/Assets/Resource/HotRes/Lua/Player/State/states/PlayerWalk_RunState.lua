@@ -22,6 +22,12 @@ function PlayerWalk_RunState:OnUpdate( )
 	local csharp = self.csharp
     -- 对应 C# 的 base.OnBufferComplete();
 	csharp:OnBufferComplete()
+end
+
+function PlayerWalk_RunState:OnFixedUpdate( )
+	self.base.OnFixedUpdate(self)
+
+	local csharp = self.csharp
 
 	-- 对应 C# 的 if (controller.HasMoveInput)
 	if csharp.controller.HasMoveInput then
@@ -36,10 +42,7 @@ function PlayerWalk_RunState:OnUpdate( )
 	        csharp.stateMachine:SwitchState("PlayerWalkState")
 	    end
 	end
-end
-
-function PlayerWalk_RunState:OnFixedUpdate( )
-	self.base.OnFixedUpdate(self)
+	
 end
 
 function PlayerWalk_RunState:OnLateUpdate( )

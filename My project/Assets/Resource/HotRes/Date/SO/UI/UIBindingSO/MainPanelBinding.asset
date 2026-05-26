@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b11faccf7f265147a656dd7b41f38c0, type: 3}
+  m_Name: MainPanelBinding
+  m_EditorClassIdentifier: 
+  uiName: MainPanel
+  bindings:
+  - widgetName: MainPanel_Image
+    widgetPath: 
+    componentType: Image
+  - widgetName: StartButton_Image
+    widgetPath: StartButton
+    componentType: Image
+  - widgetName: StartButton_Button
+    widgetPath: StartButton
+    componentType: Button
+  - widgetName: StartButtonText_TextMeshProUGUI
+    widgetPath: StartButton/StartButtonText
+    componentType: TextMeshProUGUI
+  - widgetName: SettingButton_Image
+    widgetPath: SettingButton
+    componentType: Image
+  - widgetName: SettingButton_Button
+    widgetPath: SettingButton
+    componentType: Button
+  - widgetName: SettingButtonText_TextMeshProUGUI
+    widgetPath: SettingButton/SettingButtonText
+    componentType: TextMeshProUGUI
+  - widgetName: ExitButton_Image
+    widgetPath: ExitButton
+    componentType: Image
+  - widgetName: ExitButton_Button
+    widgetPath: ExitButton
+    componentType: Button
+  - widgetName: ExitButtonText_TextMeshProUGUI
+    widgetPath: ExitButton/ExitButtonText
+    componentType: TextMeshProUGUI

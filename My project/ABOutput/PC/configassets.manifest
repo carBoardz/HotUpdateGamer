@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3652483121
+CRC: 1067231824
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 05fdb461dd72558a761e7222906c1ffb
+    Hash: c038d7fb01bdf6e3687658cea8ff64dc
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 2006cd2f3511d387b74c18d1cd49ae9a
+    Hash: 2341820808d805cf1c826f2268567b64
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 05fdb461dd72558a761e7222906c1ffb
+    Hash: c038d7fb01bdf6e3687658cea8ff64dc
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -27,11 +27,11 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: cf25790ef2367994787032ec97bcc0c1, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 4b11faccf7f265147a656dd7b41f38c0, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 38648d011538d794a90d0e233afe57f6, type: 3}
 - Class: 114
@@ -59,6 +59,8 @@ ClassTypes:
 SerializeReferenceClassIdentifiers:
 - AssemblyName: Assembly-CSharp
   ClassName: UIConfigItem
+- AssemblyName: Assembly-CSharp
+  ClassName: WidgetBinding
 - AssemblyName: Unity.TextMeshPro
   ClassName: TMPro.FaceInfo_Legacy
 - AssemblyName: Unity.TextMeshPro
@@ -100,18 +102,19 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.Navigation
 - AssemblyName: UnityEngine.UI
-  ClassName: UnityEngine.UI.Scrollbar/ScrollEvent
-- AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.Slider/SliderEvent
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.SpriteState
 Assets:
+- Assets/Resource/HotRes/Date/SO/UI/UIBindingSO/UILoadingBinding.asset
 - Assets/Resource/HotRes/Date/SO/ABSO/PreloadAssetSO.asset
 - Assets/Resource/HotRes/bytes/ConfigBytes/bytes/PlayerDate.json.bytes
 - Assets/Resource/HotRes/Date/bytes/PlayerDate.json
 - Assets/Prefab/ui/UIRoot/Top/Prompt.prefab
 - Assets/Prefab/ui/UIRoot/Normal/MainPanel.prefab
+- Assets/Resource/HotRes/Date/SO/UI/UIBindingSO/PromptBinding.asset
 - Assets/Prefab/ui/UIRoot/Normal/UILoading.prefab
 - Assets/Resource/HotRes/Date/SO/UI/UIConfigSO/UISOConfigs.asset
-- Assets/Resource/HotRes/Date/SO/Sence/SceneListConfig.asset
+- Assets/Resource/HotRes/Date/SO/Scene/AllScenesSO.asset
+- Assets/Resource/HotRes/Date/SO/UI/UIBindingSO/MainPanelBinding.asset
 Dependencies: []

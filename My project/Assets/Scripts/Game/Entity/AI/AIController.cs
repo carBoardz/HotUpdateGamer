@@ -9,7 +9,13 @@ public class AIController : AIControllerBase
     {
         aiHotLogic = new AIHotLogic();
         aiHotLogic.Init(this);
-        EventCenter.Instance.Register("LuaEnv_Ready", new Action(OnLuaReady), owner: this);
+
+        EventCenter.Instance.Register(
+        "LuaEnv_Ready",
+        new Action(OnLuaReady),
+        owner: this,
+        once: false
+        );
     }
     void OnLuaReady()
     {

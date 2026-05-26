@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Tool.MyAB;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
 using XLua;
@@ -14,19 +15,21 @@ public class BaseView : MonoBehaviour
     bool _widgetsCollected = false;
     Dictionary<string, Component> _widgets = new Dictionary<string, Component>();
     static Dictionary<string, LuaBindingCollector> _bindingSoCache = new();//有多个同名面板同时存在（比如多个 DamageText），也只需要加载一次 SO
+
     public LuaTable _luaController { get; private set; }
     public string UIName { get; set; }
     public void BindLuaController(LuaTable controller, object userData = null)
     {
-        _luaController = controller;
-        
-        var luafunction = _luaController.Get<LuaFunction>("OnInit");
-        if (luafunction != null)
-            luafunction?.Call(_luaController, this, userData);
-        else
-            Debug.LogError($"Lua Controller for {gameObject.name} has no OnInit method!");
-    }
+        if(controller != null)
+        _luaController = controller;//也就是o
 
+        var onInit = _luaController.Get<LuaFunction>("OnInit");
+        if (onInit != null)
+            onInit?.Call(_luaController, this, userData);
+        else
+            Debug.LogError($"[BaseView] Lua Controller for {gameObject.name} has no OnInit method!");
+    }
+    #region 组件绑定相关
     /// <summary>
     /// 通过BindingSO获取对应的绑定组件
     /// </summary>
@@ -38,8 +41,6 @@ public class BaseView : MonoBehaviour
     {
         if (_widgetsCollected) return;
         _widgets.Clear();
-
-        string bindCfgPath = UIConfig.bindingConfig.Replace("Binding", "");
 
         LuaBindingCollector luaBindingCollector = await LoadBindingSOAsync(UIConfig);
 
@@ -56,7 +57,6 @@ public class BaseView : MonoBehaviour
     /// <returns></returns>
     void CollectWidgetsFromSO(WidgetBinding bindingSO)
     {
-        _widgets.Clear();
         if (bindingSO == null) return;
         Component comp;
         if (string.IsNullOrEmpty(bindingSO.widgetPath))
@@ -68,9 +68,22 @@ public class BaseView : MonoBehaviour
         {
             Transform child = transform.Find(bindingSO.widgetPath);
             comp = child.GetComponent(bindingSO.componentType);
-            if (comp != null) _widgets[bindingSO.widgetName] = comp;
+        }
+        if (comp != null)
+        {
+            _widgets[bindingSO.widgetName] = comp;
+            RegisterWidgetEvents(bindingSO.widgetName,comp);
+        }
+        else
+        {
+            Debug.LogError($"[BaseView] 无法找到组件{bindingSO.widgetName}");
         }
     }
+    /// <summary>
+    /// 异步加载SOBindingConfig
+    /// </summary>
+    /// <param name="UIConfig">UI配置信息</param>
+    /// <returns></returns>
     public async Task<LuaBindingCollector> LoadBindingSOAsync(UIConfigItem UIConfig)
     {
         if (_bindingSoCache.TryGetValue(UIConfig.bindingConfig, out var cachedSO))
@@ -87,28 +100,11 @@ public class BaseView : MonoBehaviour
         if (so != null)
             _bindingSoCache[UIConfig.bindingConfig] = so;
         else
-            Debug.LogError($"加载绑定SO失败：{UIConfig.bindingConfig}");
+            Debug.LogError($"[BaseView] 加载绑定SO失败：{UIConfig.bindingConfig}");
 
         return so;
     }
-    /// <summary>
-    /// 刷新View视图
-    /// </summary>
-    public void RefreshView()
-    {
-        _luaController.Get<LuaFunction>("RefreshView")?.Call(_luaController);
-    }
-    public void OnButtonClick(string btnName)
-    {
-        if (_luaController == null) return;
-        _luaController.Get<LuaFunction>("OnButtonClick")?.Call(_luaController, btnName);
-    }
-    [LuaCallCSharp]
-    public Component GetWidget(string name)
-    {
-        _widgets.TryGetValue(name, out var comp);
-        return comp;
-    }
+    #endregion
     public void CloseSelf()
     {
         UIManager.Instance.CloseUI(UIName);
@@ -118,10 +114,72 @@ public class BaseView : MonoBehaviour
     /// </summary>
     public void DisposeView()
     {
+        UnregisterWidgetEvents();
         _luaController.Get<LuaFunction>("DisposeView")?.Call(_luaController);
         _luaController?.Dispose();
         _luaController = null;
         _widgets.Clear();
         _widgetsCollected = false;
     }
+
+    #region 为按钮等ui组件添加监听事件
+    private void RegisterWidgetEvents(string widgetName, Component comp)
+    {
+        switch (comp)
+        {
+            case Button button:
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => OnButtonClick(widgetName));
+                break;
+            case Toggle toggle:
+                toggle.onValueChanged.RemoveAllListeners();
+                toggle.onValueChanged.AddListener((isOn) => OnToggleValueChanged(widgetName, isOn));
+                break;
+        }
+    }
+
+    private void UnregisterWidgetEvents()
+    {
+        foreach (var kvp in _widgets)
+        {
+            if (kvp.Value is Button button)
+            {
+                button.onClick.RemoveAllListeners();
+            }
+            if (kvp.Value is Toggle toggle)
+            {
+                toggle.onValueChanged.RemoveAllListeners();
+            }
+        }
+    }
+    #endregion
+    
+    #region 绑定lua中方法的函数相关
+    public void OnButtonClick(string btnName)
+    {
+        if (_luaController == null) return;
+        _luaController.Get<LuaFunction>("OnButtonClick")?.Call(_luaController, btnName);
+    }
+    public void OnToggleValueChanged(string togName, bool isOn)
+    {
+        if (_luaController == null) return;
+        _luaController.Get<LuaFunction>("OnToggleValueChanged")?.Call(_luaController, togName, isOn);
+    }
+    /// <summary>
+    /// 刷新View视图
+    /// </summary>
+    public void RefreshView()
+    {
+        _luaController.Get<LuaFunction>("RefreshView")?.Call(_luaController);
+    }
+    #endregion
+
+    #region lua调用csharp相关函数
+    [LuaCallCSharp]
+    public Component GetWidget(string name)
+    {
+        _widgets.TryGetValue(name, out var comp);
+        return comp;
+    }
+    #endregion
 }

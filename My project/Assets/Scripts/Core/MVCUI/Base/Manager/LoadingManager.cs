@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using TMPro;
 using Tool.MyAB;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,7 @@ using XLua;
 
 public class LoadingManager : SingletonMono<LoadingManager>
 {
-    const string LoadingUIName = "StartGameLoadingPanelController";
+    const string LoadingUIConfigName = "UILoading";
     BaseView _loadingView;
     LuaTable _loadingLuaController;
 
@@ -21,7 +22,8 @@ public class LoadingManager : SingletonMono<LoadingManager>
     {
         if (_loadingView == null)
         {
-            _loadingView = await UIManager.Instance.OpenUIAsync(LoadingUIName, UILayer.Top);
+            ApplyFontToLoadingText();
+            _loadingView = await UIManager.Instance.OpenUIAsync(LoadingUIConfigName, UILayer.Normal);
             if (_loadingView == null) return;
             _loadingLuaController = _loadingView._luaController;
         }
@@ -30,8 +32,8 @@ public class LoadingManager : SingletonMono<LoadingManager>
             _loadingView.gameObject.SetActive(true);
         }
 
-        _loadingLuaController?.Get<LuaFunction>("OnShow")?.Call(_loadingLuaController, loadingText);
         _showTcs = new();
+        _loadingLuaController?.Get<LuaFunction>("OnShow")?.Call(_loadingLuaController, loadingText);
         await _showTcs.Task;
     }
 
@@ -41,12 +43,12 @@ public class LoadingManager : SingletonMono<LoadingManager>
     }
     public async Task HideAsync(string loadingText = "Initialization complete...")
     {
-        _loadingLuaController?.Get<LuaFunction>("OnHide")?.Call(_loadingLuaController, loadingText);
         _hideTcs = new();
+        _loadingLuaController?.Get<LuaFunction>("OnHide")?.Call(_loadingLuaController, loadingText);
         await _hideTcs.Task;
 
         // 真正的关闭交给 UIManager 回收/隐藏
-        UIManager.Instance.CloseUI(LoadingUIName);
+        UIManager.Instance.CloseUI(LoadingUIConfigName);
         _loadingView = null;
         _loadingLuaController = null;
     }
@@ -55,11 +57,45 @@ public class LoadingManager : SingletonMono<LoadingManager>
     /// </summary>
     public void OnShowAnimFinished()
     {
+        Debug.Log("[LoadingManager] OnShowAnimFinished invoked");
         _showTcs?.TrySetResult(true);
     }
     public void OnHideAnimFinished()
     {
         _hideTcs?.TrySetResult(true);
+    }
+    /// <summary>
+    /// 重置 LoadingManager 状态（游戏重启时调用）
+    /// </summary>
+    public async Task Reset()
+    {
+        _loadingView = null;
+        _loadingLuaController = null;
+        _showTcs = null;
+        _hideTcs = null;
+    }
+    /// <summary>
+    /// 确保将FontText(文本资源)挂载到text资源上
+    /// </summary>
+    public async Task ApplyFontToLoadingText()
+    {
+        if (_loadingView == null) return;
+        // 假设 LoadingText 是绑定的组件名
+        var loadingText = _loadingView.GetWidget("loadingText_TextMeshProUGUI") as TextMeshProUGUI;
+        if (loadingText == null && loadingText.font == null) return;
+
+        // 从 configassets 中加载字体
+        ABManager.Instance.LoadResAsync("configassets", "LiberationSans SDF", typeof(TMP_FontAsset), (obj) =>
+        {
+            if (obj is TMP_FontAsset font)
+            {
+                loadingText.font = font;
+            }
+            else
+            {
+                Debug.LogError("加载字体失败！");
+            }
+        });
     }
 }
 //[其他业务]  →  LoadingService(静态工具类)

@@ -36,13 +36,14 @@ namespace Tool.MyAB
         protected override void Awake()
         {
             base.Awake();
+            if (!IsValidSingleton) return;
             InitPath();
 
             EventCenter.Instance.Register(
-            "Csharp_Managers_Ready",
-            new Action(OnCsharpManagersReady),
+            "LuaEnv_Ready",
+            new Action(OnLuaEnvReady),
             owner: this,
-            once: true
+            once: false
             );
         }
 
@@ -206,7 +207,7 @@ namespace Tool.MyAB
         /// <param name="abName"></param>
         /// <param name="assetName"></param>
         /// <returns></returns>
-        public T LoadAssetSync<T>(string abName, string assetName) where T : UnityEngine.Object
+        public T LoadAssetSync<T>(string abName, string assetName) where T : UnityEngine.Object//要改
         {
             if (_abCache.TryGetValue(abName, out var data) && data.ab != null)
             {
@@ -237,7 +238,7 @@ namespace Tool.MyAB
                 callback?.Invoke(null);
                 return;
             }
-            Debug.Log($"abName:{abName}准备加载");
+            Debug.Log($"abName: {abName}准备加载");
             _ = LoadResTask(abName, resName, type, callback);
         }
         /// <summary>
@@ -371,7 +372,7 @@ namespace Tool.MyAB
                 {
                     success = true;
                     Debug.Log($"AB包 {abName} 预加载成功，是否有效：{IsBundleHeaderValid(abName)}");
-                    //if (abName == "luaassets") DebugListAllAssets(abName);
+                    //if (abName == "scene") DebugListAllAssets(abName);
                 }
             }
             catch (Exception ex)
@@ -485,10 +486,11 @@ namespace Tool.MyAB
             }
         }
         #endregion
+        #region 内部相关方法
         async Task LoadSingleABInternalAsync(string abName)
         {
             string abPath = GetABRealPath(abName);
-            
+            Debug.Log($"资源{abName}的加载路径{abPath}");
             if (string.IsNullOrEmpty(abPath))
             {
                 Debug.LogError($"AB包{abPath}路径不存在");
@@ -589,57 +591,8 @@ namespace Tool.MyAB
             }
             return streamingPath;
         }
-        /// <summary>
-        /// 卸载AB包（核心方法，补充调用说明）
-        /// </summary>
-        /// <param name="abName">AB包名称</param>
-        /// <param name="unloadAllLoadedObjects">是否卸载已加载的资源对象</param>
-        public void UnloadAB(string abName, bool unloadAllLoadedObjects = false)
-        {
-            if (_abCache.TryGetValue(abName, out var abData))
-            {
-                int newRefCount = abData.refCount - 1;
-                if (newRefCount <= 0)
-                {
-                    abData.ab.Unload(unloadAllLoadedObjects);
-                    _abCache.Remove(abName);
-                    Debug.Log($"AB包{abName}已卸载");
-                }
-                else
-                {
-                    _abCache[abName] = (abData.ab, newRefCount);
-                    Debug.Log($"AB包{abName}引用计数-1，当前：{newRefCount}");
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"AB包{abName}未缓存");
-            }
-        }
-        /// <summary>
-        /// 清空所有AB包缓存（游戏退出/场景切换时调用）
-        /// </summary>
-        public void ClearAllABCache()
-        {
-            foreach (var abData in _abCache.Values)
-            {
-                abData.ab?.Unload(true);
-            }
-            _abCache.Clear();
-            _mainManifest = null;
-            _mainAB?.Unload(true);
-            _mainAB = null;
-            Debug.Log("所有AB包缓存已清空");
-        }
-        protected override void OnDestroy()
-        {
-            if (IsValidSingleton == this)
-            {
-                Debug.Log("ABManager自身销毁造成的AB包缓存清理");
-                ClearAllABCache();
-            }
-            base.OnDestroy();
-        }
+        #endregion
+        #region 调试相关
         /// <summary>
         /// 调试方法（打印指定ab包中的所有缓存资源）
         /// </summary>
@@ -649,7 +602,7 @@ namespace Tool.MyAB
             if (_abCache.TryGetValue(abName, out var data) && data.ab != null)
             {
                 string[] assetNames = data.ab.GetAllAssetNames();
-                Debug.Log($"AB包[{abName}]里的所有资源：");
+                Debug.Log($"[ABManager] AB包[{abName}]里的所有资源：");
                 foreach (var name in assetNames)
                 {
                     Debug.Log(" - " + name);
@@ -688,11 +641,71 @@ namespace Tool.MyAB
                 return false;
             }
         }
+        #endregion
         #region 事件委托
-        void OnCsharpManagersReady()
+        void OnLuaEnvReady()
         {
-            LuaMgr.Instance.Global.Set("ABMgr", this);
+            LuaMgr.Instance.Global.Set("ABManager", this);
             Debug.Log("ABMgr 注入Lua成功");
+        }
+        #endregion
+        #region 清理缓存相关
+        /// <summary>
+        /// 卸载AB包（核心方法，补充调用说明）
+        /// </summary>
+        /// <param name="abName">AB包名称</param>
+        /// <param name="unloadAllLoadedObjects">是否卸载已加载的资源对象</param>
+        public void UnloadAB(string abName, bool unloadAllLoadedObjects = false)
+        {
+            if (_abCache.TryGetValue(abName, out var abData))
+            {
+                int newRefCount = abData.refCount - 1;
+                if (newRefCount <= 0)
+                {
+                    abData.ab.Unload(unloadAllLoadedObjects);
+                    _abCache.Remove(abName);
+                    Debug.Log($"AB包{abName}已卸载");
+                }
+                else
+                {
+                    _abCache[abName] = (abData.ab, newRefCount);
+                    Debug.Log($"AB包{abName}引用计数-1，当前：{newRefCount}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"AB包{abName}未缓存");
+            }
+        }
+
+        /// <summary>
+        /// 清空所有AB包缓存（游戏退出/场景切换时调用）
+        /// </summary>
+        public async Task ClearAllABCache()
+        {
+            foreach (var abData in _abCache.Values)
+            {
+                abData.ab?.Unload(true);
+            }
+            _abCache.Clear();
+            _mainManifest = null;
+            _mainAB?.Unload(true);
+            _mainAB = null;
+            Debug.Log("所有AB包缓存已清空");
+        }
+        protected override void OnDestroy()
+        {
+            if (IsValidSingleton == this)
+            {
+                Debug.Log("ABManager自身销毁造成的AB包缓存清理");
+                ClearAllABCache();
+            }
+            base.OnDestroy();
+        }
+        protected override void OnApplicationQuit()
+        {
+            base.OnApplicationQuit();
+            ClearAllABCache();
         }
         #endregion
     }

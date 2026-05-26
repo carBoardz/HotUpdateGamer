@@ -10,7 +10,8 @@ public class UIConfigGenerate : EditorWindow
     const string PrefabDir = "Assets/Prefab/ui/UIRoot/";
     const string OutPutDir = "Assets/Resource/HotRes/Date/SO/UI/UIConfigSO/";
     const string assetName = "/UISOConfigs.asset";
-    [MenuItem("Assets/UI/生成UI配置信息", false, 100)]
+    [MenuItem("Assets/UISO/生成UI配置信息", false, 100)]
+    [Tooltip("生成每个UIPrefab的配置信息，配置文件生成在目录Assets/Resource/HotRes/Date/SO/UI/UIConfigSO/")]
     public static void GenerateUIConfig()
     {
         //检查路径是否存在
@@ -63,7 +64,7 @@ public class UIConfigGenerate : EditorWindow
             {
                 uiName = panelName,
                 abName = abName,
-                controller = $"UI.{panelName}Controller",
+                controller = $"{panelName}Controller",
                 bindingConfig = $"{panelName}Binding"
             };
             UISOConfigsCollector.allUIConfigs.Add(newItem);

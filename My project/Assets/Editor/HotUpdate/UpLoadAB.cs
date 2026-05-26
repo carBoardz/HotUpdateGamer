@@ -17,7 +17,8 @@ public class UpLoadAB
         Timeout = TimeSpan.FromSeconds(30)
     };
 
-    [MenuItem("AB包工具/上传热更文件 - 将Asset同级的ABOutput里面的内容上传至远端资源服务器")]
+    [MenuItem("AB包工具/上传热更文件")]
+    [Tooltip("将Asset同级的ABOutput里面的内容上传至远端资源服务器")]
     public static async void UpLoadFile()
     {
         List<DirectoryInfo> dirs = GetAllDirectories(GeneratePath);

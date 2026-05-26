@@ -9,9 +9,9 @@ EventCenter:RegisterLua("LuaEnv_Ready", function()
     
     local abName = "configassets"
     local resName = "PlayerDate.json"
-    print("实际加载资源名：" .. resName)
+    --print("实际加载资源名：" .. resName)
     
-    abMgr:LoadTextAsync(abName, resName, function(res)
+    ABManager:LoadTextAsync(abName, resName, function(res)
         print("资源加载结果：", res)
         if res == nil then return end
         local data = Json.decode(res)
