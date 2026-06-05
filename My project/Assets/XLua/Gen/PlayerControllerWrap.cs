@@ -21,21 +21,22 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(PlayerController);
-			Utils.BeginObjectRegister(type, L, translator, 0, 0, 7, 3);
+			Utils.BeginObjectRegister(type, L, translator, 0, 3, 6, 2);
 			
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "MoveCharacter", _m_MoveCharacter);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetCameraForward", _m_GetCameraForward);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetCameraRight", _m_GetCameraRight);
 			
 			
 			Utils.RegisterFunc(L, Utils.GETTER_IDX, "HasMoveInput", _g_get_HasMoveInput);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "HasRunInput", _g_get_HasRunInput);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "HasCrouchInput", _g_get_HasCrouchInput);
-            Utils.RegisterFunc(L, Utils.GETTER_IDX, "CurrentStateName", _g_get_CurrentStateName);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "IsGrounded", _g_get_IsGrounded);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "_inputDirection", _g_get__inputDirection);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "pos", _g_get_pos);
-            Utils.RegisterFunc(L, Utils.GETTER_IDX, "currentState", _g_get_currentState);
             
 			Utils.RegisterFunc(L, Utils.SETTER_IDX, "_inputDirection", _s_set__inputDirection);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "pos", _s_set_pos);
-            Utils.RegisterFunc(L, Utils.SETTER_IDX, "currentState", _s_set_currentState);
             
 			
 			Utils.EndObjectRegister(type, L, translator, null, null,
@@ -80,6 +81,90 @@ namespace XLua.CSObjectWrap
         
         
         
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_MoveCharacter(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                PlayerController gen_to_be_invoked = (PlayerController)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    UnityEngine.Vector3 _motion;translator.Get(L, 2, out _motion);
+                    
+                    gen_to_be_invoked.MoveCharacter( _motion );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetCameraForward(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                PlayerController gen_to_be_invoked = (PlayerController)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    
+                        var gen_ret = gen_to_be_invoked.GetCameraForward(  );
+                        translator.PushUnityEngineVector3(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetCameraRight(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                PlayerController gen_to_be_invoked = (PlayerController)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    
+                        var gen_ret = gen_to_be_invoked.GetCameraRight(  );
+                        translator.PushUnityEngineVector3(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
         
         
         
@@ -127,13 +212,13 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _g_get_CurrentStateName(RealStatePtr L)
+        static int _g_get_IsGrounded(RealStatePtr L)
         {
 		    try {
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 PlayerController gen_to_be_invoked = (PlayerController)translator.FastGetCSObj(L, 1);
-                LuaAPI.lua_pushstring(L, gen_to_be_invoked.CurrentStateName);
+                LuaAPI.lua_pushboolean(L, gen_to_be_invoked.IsGrounded);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -168,20 +253,6 @@ namespace XLua.CSObjectWrap
             return 1;
         }
         
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _g_get_currentState(RealStatePtr L)
-        {
-		    try {
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-			
-                PlayerController gen_to_be_invoked = (PlayerController)translator.FastGetCSObj(L, 1);
-                translator.PushAny(L, gen_to_be_invoked.currentState);
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            return 1;
-        }
-        
         
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -209,21 +280,6 @@ namespace XLua.CSObjectWrap
                 PlayerController gen_to_be_invoked = (PlayerController)translator.FastGetCSObj(L, 1);
                 UnityEngine.Vector3 gen_value;translator.Get(L, 2, out gen_value);
 				gen_to_be_invoked.pos = gen_value;
-            
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            return 0;
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _s_set_currentState(RealStatePtr L)
-        {
-		    try {
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-			
-                PlayerController gen_to_be_invoked = (PlayerController)translator.FastGetCSObj(L, 1);
-                gen_to_be_invoked.currentState = (IState)translator.GetObject(L, 2, typeof(IState));
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);

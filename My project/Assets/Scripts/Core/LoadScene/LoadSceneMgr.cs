@@ -97,7 +97,7 @@ public class LoadSceneMgr : SingletonMono<LoadSceneMgr>
             currentIndex = index;
             currentScene = _SceneListConfig.levelList[currentIndex];
 
-            Debug.Log($"[LoadSceneMgr] 准备加载场景: index={index}, scenePath={currentScene.scenePath}, assetBundleName={currentScene.assetBundleName}");
+            //Debug.Log($"[LoadSceneMgr] 准备加载场景: index={index}, scenePath={currentScene.scenePath}, assetBundleName={currentScene.assetBundleName}");
 
             var tcs = new TaskCompletionSource<bool>();
             ABManager.Instance.LoadABOnlyAsync(

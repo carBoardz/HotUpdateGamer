@@ -4,19 +4,35 @@ using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.XR;
 using XLua;
-
+[LuaCallCSharp]
 public class PlayerMovementStateMachine : MovementStateMachineBase
 {
     public readonly Dictionary<string, IState> _stateDict;
     public PlayerMovementStateMachine(PlayerController controller) :base(controller)
     {
         _stateDict = new();
-        if (_stateDict["PlayerIdleState"] != null)
-            Initialize(_stateDict["PlayerIdleState"]);
     }
-
+    public void SetInitialState(string stateName)
+    {
+        Initialize(stateName);
+    }
+    /// <summary>
+    /// Lua 友好的初始化方法：通过状态名字符串设置初始状态
+    /// </summary>
+    public void Initialize(string stateName)
+    {
+        if (_stateDict.TryGetValue(stateName, out var state))
+        {
+            Initialize(state);  // 调用基类的 Initialize(IState)
+        }
+        else
+        {
+            Debug.LogError($"状态 '{stateName}' 未注册！");
+        }
+    }
     public void LuaRisterState(string StateName, LuaTable luaState)
     {
+        Debug.Log("LuaRisterState 被调用");
         var state = new LuaPlayerState(this, playerController,luaState);
         if (!_stateDict.ContainsKey(StateName))
             _stateDict.Add(StateName, state);
@@ -33,7 +49,6 @@ public class PlayerMovementStateMachine : MovementStateMachineBase
     public override void OnUpdate()
     {
         currentState?.OnUpdate();
-        playerController.playerAnimationController.OnAnimationUpdate();
     }
     public override void OnFixedUpdate()
     {

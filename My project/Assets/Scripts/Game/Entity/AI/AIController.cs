@@ -26,7 +26,7 @@ public class AIController : AIControllerBase
     protected override void OnUpdate()
     {
         base.OnUpdate();
-        aiControlleStateMechine.OnUpdate();
+        //aiControlleStateMechine.OnUpdate();
         aiHotLogic.Update(Time.deltaTime);
     }
     private void OnDisable()

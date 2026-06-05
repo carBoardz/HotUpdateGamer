@@ -61,7 +61,6 @@ public class GameEntry : SingletonMono<GameEntry>
             if (needRestart)
             {
                 await RestartGameAsync();
-                return;
             }
 
             // 第六步：触发全局事件（所有准备就绪）
@@ -105,6 +104,8 @@ public class GameEntry : SingletonMono<GameEntry>
         new GameObject("LuaMgr").AddComponent<LuaMgr>();
         new GameObject("LoadSceneMgr").AddComponent<LoadSceneMgr>();
         new GameObject("UIManager").AddComponent<UIManager>();
+        new GameObject("PlayerManager").AddComponent<PlayerManager>();
+        new GameObject("CameraManager").AddComponent<CameraManager>();
     }
     async Task InitConfig()
     {
@@ -146,7 +147,7 @@ public class GameEntry : SingletonMono<GameEntry>
             return false;
         }
         _isUpdating = true;
-        
+        Debug.Log("准备检测资源更新");
         bool success = await ABUpdateManager.Instance.DownLoadCompareFile();
 
         try
@@ -188,7 +189,6 @@ public class GameEntry : SingletonMono<GameEntry>
         LuaMgr.Instance.DoString("LuaMain");
         await InitConfig();
         await LoadSceneMgr.Instance.LoadSceneByIndex(0);
-        await LoadingManager.Instance.ApplyFontToLoadingText();
         await LoadingManager.Instance.ShowAsync();
 
         Debug.Log("<color=blue>游戏重启完成</color>");

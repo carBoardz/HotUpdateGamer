@@ -21,14 +21,15 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(PlayerAnimationController);
-			Utils.BeginObjectRegister(type, L, translator, 0, 2, 0, 0);
+			Utils.BeginObjectRegister(type, L, translator, 0, 1, 1, 1);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnAnimationUpdate", _m_OnAnimationUpdate);
 			
 			
-			
-			
+			Utils.RegisterFunc(L, Utils.GETTER_IDX, "_animator", _g_get__animator);
+            
+			Utils.RegisterFunc(L, Utils.SETTER_IDX, "_animator", _s_set__animator);
+            
 			
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
@@ -102,37 +103,39 @@ namespace XLua.CSObjectWrap
             
         }
         
+        
+        
+        
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_OnAnimationUpdate(RealStatePtr L)
+        static int _g_get__animator(RealStatePtr L)
         {
 		    try {
-            
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
+			
                 PlayerAnimationController gen_to_be_invoked = (PlayerAnimationController)translator.FastGetCSObj(L, 1);
-            
-            
-                
-                {
-                    
-                    gen_to_be_invoked.OnAnimationUpdate(  );
-                    
-                    
-                    
-                    return 0;
-                }
-                
+                translator.Push(L, gen_to_be_invoked._animator);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
-            
+            return 1;
         }
         
         
         
-        
-        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set__animator(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                PlayerAnimationController gen_to_be_invoked = (PlayerAnimationController)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked._animator = (UnityEngine.Animator)translator.GetObject(L, 2, typeof(UnityEngine.Animator));
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
         
 		
 		

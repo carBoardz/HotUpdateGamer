@@ -1,25 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using XLua;
 
-public class AIControlleStateMechine : MovementStateMachineBase
+[LuaCallCSharp]
+public class AIMovementStateMachine : MovementStateMachineBase
 {
-    protected AIIdleState idleState { get; private set; }
-    protected AIWalkState walkState { get; private set; }
-    protected AIRunState runState { get; private set; }
-    protected AIInjuredState injuredState { get; private set; }
+    public readonly Dictionary<string, IState> _stateDict;
 
-    public AIControlleStateMechine(AIController controller) : base(controller)
+    public AIMovementStateMachine(AIController controller) : base(controller)
     {
-        idleState = new AIIdleState(this, controller);
-        walkState = new AIWalkState(this, controller);
-        runState = new AIRunState(this, controller);
-        injuredState = new AIInjuredState(this, controller);
-
-        Initialize(idleState);
+        _stateDict = new();
     }
-    public void SwitchToIdle() => ChangeState(idleState);
-    public void SwitchToWalk() => ChangeState(walkState);
-    public void SwitchToRun() => ChangeState(runState);
-    public void SwitchToinjured() => ChangeState(injuredState);
+    public void SetInitialState(string stateName)
+    {
+        Initialize(stateName);
+    }
+    /// <summary>
+    /// Lua 友好的初始化方法：通过状态名字符串设置初始状态
+    /// </summary>
+    public void Initialize(string stateName)
+    {
+        if (_stateDict.TryGetValue(stateName, out var state))
+        {
+            Initialize(state);  // 调用基类的 Initialize(IState)
+        }
+        else
+        {
+            Debug.LogError($"状态 '{stateName}' 未注册！");
+        }
+    }
+    public void LuaRisterState(string StateName, LuaTable luaState)
+    {
+        Debug.Log("LuaRisterState 被调用");
+        //var state = new LuaEnemyState(this, playerController, luaState);
+        //if (!_stateDict.ContainsKey(StateName))
+        //    _stateDict.Add(StateName, state);
+    }
+    public void SwitchState(string stateName)
+    {
+        if (!_stateDict.ContainsKey(stateName))
+        {
+            Debug.LogError($"状态不存在：{stateName}");
+            return;
+        }
+        ChangeState(_stateDict[stateName]);
+    }
+    public override void OnUpdate()
+    {
+        currentState?.OnUpdate();
+    }
+    public override void OnFixedUpdate()
+    {
+        currentState?.OnFixedUpdate();
+    }
 }

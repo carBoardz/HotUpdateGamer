@@ -22,6 +22,9 @@ function MainPanelController:OnButtonClick(btnName)
         print("开始游戏按钮被点击")
         LoadSceneMgr:NextLevelAsync(function()
 		    print("场景加载完成")
+		    EventCenter:Trigger("LoadPlayer")
+		    CS.UnityEngine.Cursor.visible = false
+			CS.UnityEngine.Cursor.lockState = CS.UnityEngine.CursorLockMode.Locked
 		end)
 
     elseif btnName == "SettingButton_Button" then

@@ -48,9 +48,6 @@ public class UpLoadAB
         string url = "http://localhost/ABRes/" + fileName;
         string localHash = ComputeFileSha256(FullName);
 
-        bool success = false;
-        Exception caughtException = null;
-
         //检测资源是否需要上传或更新
         bool needUpload = true;
         try

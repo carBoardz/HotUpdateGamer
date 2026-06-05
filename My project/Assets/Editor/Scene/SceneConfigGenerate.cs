@@ -114,20 +114,4 @@ public class SceneSOGenerater : EditorWindow
         }
         return assets;
     }
-    [MenuItem("Tools/Test scene AB")]
-    static void TestSceneAB()
-    {
-        string path = Application.persistentDataPath + "/ABRes/scene";
-        AssetBundle ab = AssetBundle.LoadFromFile(path);
-        if (ab != null)
-        {
-            string[] scenePaths = ab.GetAllScenePaths();
-            Debug.Log($"scene 包内场景数量: {scenePaths.Length}");
-            foreach (var scenePath in scenePaths)
-                Debug.Log(scenePath);
-            ab.Unload(false);
-        }
-        else
-            Debug.LogError("scene 包加载失败：" + path);
-    }
 }

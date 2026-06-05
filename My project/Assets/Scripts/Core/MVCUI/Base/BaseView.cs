@@ -43,7 +43,7 @@ public class BaseView : MonoBehaviour
         _widgets.Clear();
 
         LuaBindingCollector luaBindingCollector = await LoadBindingSOAsync(UIConfig);
-
+        Debug.Log($"{luaBindingCollector.uiName} 的组件绑定：");
         foreach (var bind in luaBindingCollector.bindings)
         {
             CollectWidgetsFromSO(bind);
@@ -72,6 +72,7 @@ public class BaseView : MonoBehaviour
         if (comp != null)
         {
             _widgets[bindingSO.widgetName] = comp;
+            //Debug.Log($"已经成功添加{comp.GetType().Name}组件 {bindingSO.widgetName} 到绑定");
             RegisterWidgetEvents(bindingSO.widgetName,comp);
         }
         else

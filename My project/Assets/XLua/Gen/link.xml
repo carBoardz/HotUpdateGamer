@@ -4,9 +4,13 @@
 
 	<assembly fullname="Assembly-CSharp">
 	    <type fullname="PlayerAnimationController" preserve="all"/>
+		<type fullname="CameraManager" preserve="all"/>
 		<type fullname="EventCenter" preserve="all"/>
 		<type fullname="LoadSceneMgr" preserve="all"/>
+		<type fullname="PlayerManager" preserve="all"/>
+		<type fullname="PlayerMovementStateMachine" preserve="all"/>
 		<type fullname="PlayerController" preserve="all"/>
+		<type fullname="XLuaGenConfig" preserve="all"/>
 		<type fullname="Tutorial.BaseClass" preserve="all"/>
 		<type fullname="Tutorial.TestEnum" preserve="all"/>
 		<type fullname="Tutorial.DerivedClass" preserve="all"/>
@@ -29,14 +33,20 @@
 		
 	</assembly>
 
-	<assembly fullname="mscorlib">
-	    <type fullname="System.Object" preserve="all"/>
-		<type fullname="System.Collections.Generic.List`1[System.Int32]" preserve="all"/>
+	<assembly fullname="UnityEngine.AnimationModule">
+	    <type fullname="UnityEngine.Animator" preserve="all"/>
+		<type fullname="UnityEngine.AnimationClip" preserve="all"/>
+		
+	</assembly>
+
+	<assembly fullname="UnityEngine.PhysicsModule">
+	    <type fullname="UnityEngine.Rigidbody" preserve="all"/>
 		
 	</assembly>
 
 	<assembly fullname="UnityEngine.CoreModule">
-	    <type fullname="UnityEngine.Object" preserve="all"/>
+	    <type fullname="UnityEngine.Transform" preserve="all"/>
+		<type fullname="UnityEngine.Object" preserve="all"/>
 		<type fullname="UnityEngine.Vector2" preserve="all"/>
 		<type fullname="UnityEngine.Vector3" preserve="all"/>
 		<type fullname="UnityEngine.Vector4" preserve="all"/>
@@ -49,7 +59,6 @@
 		<type fullname="UnityEngine.GameObject" preserve="all"/>
 		<type fullname="UnityEngine.Component" preserve="all"/>
 		<type fullname="UnityEngine.Behaviour" preserve="all"/>
-		<type fullname="UnityEngine.Transform" preserve="all"/>
 		<type fullname="UnityEngine.Resources" preserve="all"/>
 		<type fullname="UnityEngine.TextAsset" preserve="all"/>
 		<type fullname="UnityEngine.Keyframe" preserve="all"/>
@@ -64,8 +73,9 @@
 		
 	</assembly>
 
-	<assembly fullname="UnityEngine.AnimationModule">
-	    <type fullname="UnityEngine.AnimationClip" preserve="all"/>
+	<assembly fullname="mscorlib">
+	    <type fullname="System.Object" preserve="all"/>
+		<type fullname="System.Collections.Generic.List`1[System.Int32]" preserve="all"/>
 		
 	</assembly>
 

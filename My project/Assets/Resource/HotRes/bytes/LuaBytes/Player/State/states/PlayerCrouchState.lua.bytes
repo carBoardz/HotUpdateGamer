@@ -1,13 +1,14 @@
-require("PlayerCrouchState")
-luaPlayerStatesBase:subClass("PlayerCrouchState")
+require("LuaPlayerStateBase")
+LuaPlayerStateBase:subClass("PlayerCrouchState")
+local AnimCtrl = require("AnimationController")
 
 function PlayerCrouchState:new()
 	local obj = self.base.new(self)
-	csharp.stateMachine:LuaRisterState("PlayerCrouchState", obj)
 	return obj
 end
 
 function PlayerCrouchState:Enter( )
+	print("玩家进入PlayerCrouchState")
 	self.base.Enter(self)
 	local csharp = self.csharp
 	csharp:OnBufferComplete()
@@ -24,23 +25,21 @@ function PlayerCrouchState:OnUpdate( )
 	csharp:OnBufferComplete()
 end
 
-function PlayerCrouchState:OnFixedUpdate( )
-	self.base.OnFixedUpdate(self)
-	local csharp = self.csharp
-	
-	-- 对应 C# 的 if (controller.HasMoveInput)
-	if csharp.controller.HasMoveInput then
-	    -- 有蹲伏输入
-	    if csharp.controller.HasCrouchInput then
-	        -- 有奔跑输入 → 蹲伏慢跑
-	        if csharp.controller.HasRunInput then
-	            csharp.stateMachine:SwitchState("PlayerCrouchState")
-	        end
-	    -- 无蹲伏输入，但有奔跑输入 → 普通慢跑
-	    elseif csharp.controller.HasRunInput then
-	        csharp.stateMachine:SwitchState("PlayerWalkState")
-	    end
-	end
+function PlayerCrouchState:OnFixedUpdate()
+    self.base.OnFixedUpdate(self)
+    local csharp = self.csharp
+
+    if csharp.controller.HasMoveInput then
+        if csharp.controller.HasCrouchInput then
+            -- 仍在蹲伏移动中，保持自身
+        else
+            -- 松开蹲伏但还在移动，回到 Walk
+            csharp.stateMachine:SwitchState("PlayerWalk_RunState")
+        end
+    else
+        -- 没有移动输入，回到 Idle
+        csharp.stateMachine:SwitchState("PlayerIdleState")
+    end
 end
 
 function PlayerCrouchState:OnLateUpdate( )

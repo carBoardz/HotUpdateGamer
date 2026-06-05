@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1067231824
+CRC: 3069906864
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c038d7fb01bdf6e3687658cea8ff64dc
+    Hash: 8d939f5ce0b8c9411353afaa25b62746
   TypeTreeHash:
     serializedVersion: 2
     Hash: 2341820808d805cf1c826f2268567b64
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: c038d7fb01bdf6e3687658cea8ff64dc
+    Hash: 8d939f5ce0b8c9411353afaa25b62746
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -115,6 +115,7 @@ Assets:
 - Assets/Resource/HotRes/Date/SO/UI/UIBindingSO/PromptBinding.asset
 - Assets/Prefab/ui/UIRoot/Normal/UILoading.prefab
 - Assets/Resource/HotRes/Date/SO/UI/UIConfigSO/UISOConfigs.asset
+- Assets/Resource/ArtRes/ui/IMG_9388.JPG
 - Assets/Resource/HotRes/Date/SO/Scene/AllScenesSO.asset
 - Assets/Resource/HotRes/Date/SO/UI/UIBindingSO/MainPanelBinding.asset
 Dependencies: []

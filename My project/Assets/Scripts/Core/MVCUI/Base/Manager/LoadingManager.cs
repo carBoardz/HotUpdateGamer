@@ -1,4 +1,5 @@
 using MySinleton;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,10 +23,10 @@ public class LoadingManager : SingletonMono<LoadingManager>
     {
         if (_loadingView == null)
         {
-            ApplyFontToLoadingText();
             _loadingView = await UIManager.Instance.OpenUIAsync(LoadingUIConfigName, UILayer.Normal);
             if (_loadingView == null) return;
             _loadingLuaController = _loadingView._luaController;
+            ApplyFontToLoadingText();
         }
         else
         {
@@ -79,23 +80,31 @@ public class LoadingManager : SingletonMono<LoadingManager>
     /// </summary>
     public async Task ApplyFontToLoadingText()
     {
-        if (_loadingView == null) return;
-        // 假设 LoadingText 是绑定的组件名
-        var loadingText = _loadingView.GetWidget("loadingText_TextMeshProUGUI") as TextMeshProUGUI;
-        if (loadingText == null && loadingText.font == null) return;
-
-        // 从 configassets 中加载字体
-        ABManager.Instance.LoadResAsync("configassets", "LiberationSans SDF", typeof(TMP_FontAsset), (obj) =>
+        try
         {
-            if (obj is TMP_FontAsset font)
+            var loadingTextComp = _loadingView.GetWidget("LoadingText_TextMeshProUGUI") as TextMeshProUGUI;
+            if (loadingTextComp != null && loadingTextComp.font == null)
             {
-                loadingText.font = font;
+                // 正确路径：从Resources内部开始，无扩展名
+                TMP_FontAsset font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+                if (font != null)
+                {
+                    loadingTextComp.font = font;
+                    Debug.Log("[LoadingManager] 字体已从 Resources 加载并赋值");
+                }
+                else
+                {
+                    // 使用内置备用字体
+                    font = Resources.GetBuiltinResource<TMP_FontAsset>("LiberationSans SDF");
+                    if (font != null) loadingTextComp.font = font;
+                    Debug.LogWarning("[LoadingManager] 未能在 Resources 中找到字体，已使用备用字体");
+                }
             }
-            else
-            {
-                Debug.LogError("加载字体失败！");
-            }
-        });
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"字体资源加载错误 {ex}");
+        }
     }
 }
 //[其他业务]  →  LoadingService(静态工具类)

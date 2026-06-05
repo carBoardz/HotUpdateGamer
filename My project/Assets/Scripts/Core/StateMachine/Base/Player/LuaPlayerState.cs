@@ -28,36 +28,42 @@ public class LuaPlayerState : IState
         stateMachine = sm;
         animContl = c.playerAnimationController;
         _luaState = luaTable;
+
+        Initialize();
     }
 
-    protected void Awake()
-    {
-        EventCenter.Instance.Register(
-        "LuaEnv_Ready",
-        new Action(OnLuaReady),
-        once: false
-        );
-    }
-    private void OnLuaReady()
+    public void Initialize()
     {
         if (LuaMgr.Instance.Global == null) Debug.LogError("LuaMgr未被实例化");
-        
-        _enter = _luaState.Get<Action>("Enter");
-        _exit = _luaState.Get<Action>("Exit");
-        _onUpdate = _luaState.Get<Action>("OnUpdate");
-        _onFixedUpdate = _luaState.Get<Action>("OnFixedUpdate");
-        _onLateUpdate = _luaState.Get<Action>("OnLateUpdate");
+
+        // 获取带 self 参数的委托版本
+        var enterWithSelf = _luaState.Get<Action<LuaTable>>("Enter");
+        var exitWithSelf = _luaState.Get<Action<LuaTable>>("Exit");
+        var onUpdateWithSelf = _luaState.Get<Action<LuaTable>>("OnUpdate");
+        var onFixedUpdateWithSelf = _luaState.Get<Action<LuaTable>>("OnFixedUpdate");
+        var onLateUpdateWithSelf = _luaState.Get<Action<LuaTable>>("OnLateUpdate");
+
+        // 包装成无参 Action，调用时自动传入 _luaState 作为 self
+        _enter = () => enterWithSelf?.Invoke(_luaState);
+        _exit = () => exitWithSelf?.Invoke(_luaState);
+        _onUpdate = () => onUpdateWithSelf?.Invoke(_luaState);
+        _onFixedUpdate = () => onFixedUpdateWithSelf?.Invoke(_luaState);
+        _onLateUpdate = () => onLateUpdateWithSelf?.Invoke(_luaState);
 
         _luaState.Set("csharp", this);
 
         Debug.Log("LuaPlayerState 注入Lua成功");
     }
-
+    public Animator GetAnimator()
+    {
+        if (animContl == null) return null;
+        return animContl._animator;
+    }
     #region 计时器方法
     /// <summary>
     /// 计时器结束回调函数
     /// </summary>
-    protected virtual void OnBufferComplete()
+    public virtual void OnBufferComplete()
     {
         isBuffering = false;
         TimerPool.Recycle(_bufferTimer);
@@ -78,7 +84,7 @@ public class LuaPlayerState : IState
     /// <summary>
     /// 重置计时器
     /// </summary>
-    protected void RecycleTimer()
+    public void RecycleTimer()
     {
         if (_bufferTimer != null)
         {
@@ -93,7 +99,6 @@ public class LuaPlayerState : IState
     public void Enter()
     {
         _enter?.Invoke();
-        Debug.Log($"玩家切换状态为{stateMachine.currentState}");
     }
     public void Exit()
     {

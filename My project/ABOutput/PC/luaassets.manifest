@@ -1,35 +1,40 @@
 ManifestFileVersion: 0
-CRC: 2840176251
+CRC: 3047628914
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 145f43269d25fc5c953e911a2b265a26
+    Hash: 2d004ef239c19f138d34acd2149bc304
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5ad585dd02dfb5016c0dad519eab8f49
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 145f43269d25fc5c953e911a2b265a26
+    Hash: 2d004ef239c19f138d34acd2149bc304
 HashAppended: 0
 ClassTypes:
 - Class: 49
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/Resource/HotRes/bytes/LuaBytes/Player/Amination/AnimationController.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/UI/Controller/MainPanelController.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/UI/Binding/MainPanel_AutoBind.lua.bytes
+- Assets/Resource/HotRes/bytes/LuaBytes/Player/Camera/CameraInput.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/LuaMain.lua.bytes
-- Assets/Resource/HotRes/bytes/LuaBytes/Player/State/luaPlayerStatesBase.lua.bytes
+- Assets/Resource/HotRes/bytes/LuaBytes/Player/State/LuaPlayerStateBase.lua.bytes
+- Assets/Resource/HotRes/bytes/LuaBytes/Player/Camera/PlayerCamera.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/Player/Date/PlayerDate.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/Common/SplitTools.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/Player/State/states/PlayerWalk_RunState.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/UI/Binding/UILoading_AutoBind.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/Player/State/states/PlayerIdleState.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/Common/Object.lua.bytes
+- Assets/Resource/HotRes/bytes/LuaBytes/Player/State/states/PlayerWalkStartState.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/UI/Controller/UILoadingController.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/Common/JsonUtility.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/UI/Binding/Prompt_AutoBind.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/InitClass.lua.bytes
+- Assets/Resource/HotRes/bytes/LuaBytes/Player/State/PlayerStateRegister.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/Player/State/states/PlayerCrouchState.lua.bytes
 - Assets/Resource/HotRes/bytes/LuaBytes/UI/LuaUIMVCBase.lua.bytes
 Dependencies: []

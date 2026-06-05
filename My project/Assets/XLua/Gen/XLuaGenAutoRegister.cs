@@ -25,13 +25,34 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(PlayerAnimationController), PlayerAnimationControllerWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(CameraManager), CameraManagerWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(EventCenter), EventCenterWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(LoadSceneMgr), LoadSceneMgrWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(PlayerManager), PlayerManagerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(PlayerMovementStateMachine), PlayerMovementStateMachineWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(PlayerController), PlayerControllerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaGenConfig), XLuaGenConfigWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityEngine.Animator), UnityEngineAnimatorWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityEngine.Rigidbody), UnityEngineRigidbodyWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityEngine.Transform), UnityEngineTransformWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(object), SystemObjectWrap.__Register);
@@ -74,9 +95,6 @@ namespace XLua.CSObjectWrap
         
         
             translator.DelayWrapLoader(typeof(UnityEngine.Behaviour), UnityEngineBehaviourWrap.__Register);
-        
-        
-            translator.DelayWrapLoader(typeof(UnityEngine.Transform), UnityEngineTransformWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityEngine.Resources), UnityEngineResourcesWrap.__Register);
@@ -156,6 +174,10 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(XLuaTest.Foo1Parent), XLuaTestFoo1ParentWrap.__Register);
         
+        }
+        
+        static void wrapInit1(LuaEnv luaenv, ObjectTranslator translator)
+        {
         
             translator.DelayWrapLoader(typeof(XLuaTest.Foo2Parent), XLuaTestFoo2ParentWrap.__Register);
         
@@ -174,10 +196,6 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(Tool.MyAB.ABManager), ToolMyABABManagerWrap.__Register);
         
-        }
-        
-        static void wrapInit1(LuaEnv luaenv, ObjectTranslator translator)
-        {
         
             translator.DelayWrapLoader(typeof(Tutorial.DerivedClass.TestEnumInner), TutorialDerivedClassTestEnumInnerWrap.__Register);
         

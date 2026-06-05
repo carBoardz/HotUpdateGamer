@@ -8,6 +8,7 @@ public class StateMechineBase : IState
     public void Initialize(IState initState)
     {
         currentState = initState;
+        Debug.Log($"currentState:{currentState}");
         currentState.Enter();
     }
     public void ChangeState(IState newState)

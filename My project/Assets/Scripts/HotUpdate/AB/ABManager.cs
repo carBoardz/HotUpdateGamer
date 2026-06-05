@@ -6,6 +6,8 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -372,7 +374,7 @@ namespace Tool.MyAB
                 {
                     success = true;
                     Debug.Log($"AB包 {abName} 预加载成功，是否有效：{IsBundleHeaderValid(abName)}");
-                    //if (abName == "scene") DebugListAllAssets(abName);
+                    //if (abName == "configassets") DebugListAllAssets(abName);
                 }
             }
             catch (Exception ex)
